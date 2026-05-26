@@ -1,0 +1,197 @@
+================================================================
+  make_ROI_from_videos.py  사용 설명서
+================================================================
+
+[ 개요 ]
+  영상 파일을 열어 마우스 클릭으로 ROI(관심 영역)를 설정하고,
+  결과를 roi_info.json 파일로 저장하는 스크립트입니다.
+
+  설정 가능한 ROI:
+    - Arena    : 실험 공간 원형 경계
+    - Shelter  : 피난처(사각형 영역)
+    - Landmark : 랜드마크 1, 2 (선택 사항)
+
+
+----------------------------------------------------------------
+[ 필요 환경 ]
+
+  - Python 3.x (Anaconda 권장)
+  - 패키지: opencv-python, numpy, tkinter (tkinter는 기본 내장)
+
+
+----------------------------------------------------------------
+[ 설치 방법 ]
+
+  Anaconda가 설치된 경우, 터미널에서 아래 명령어 실행:
+
+    C:\Anaconda\python.exe -m pip install opencv-python
+
+  ※ 주의: python 명령어가 Anaconda를 가리키지 않을 수 있습니다.
+     반드시 전체 경로(C:\Anaconda\python.exe)를 사용하거나,
+     VS Code에서 인터프리터를 Anaconda로 설정하세요.
+
+
+----------------------------------------------------------------
+[ 실행 방법 ]
+
+  터미널에서:
+    C:\Anaconda\python.exe make_ROI_from_videos.py
+
+  VS Code에서:
+    1. Ctrl+Shift+P → "Python: Select Interpreter"
+    2. C:\Anaconda\python.exe 선택
+    3. 스크립트 실행
+
+
+----------------------------------------------------------------
+[ 사용 순서 ]
+
+  1. 스크립트 실행 시 경로 설정 창이 열립니다.
+       - [영상 파일]: ROI를 설정할 동영상 파일 선택 (.avi/.mp4/.mov)
+       - [저장 경로]: roi_info.json을 저장할 폴더 선택
+       - "ROI setting start" 버튼 클릭
+
+  2. 영상의 중간 프레임이 화면에 열리며, 순서대로 클릭합니다.
+
+     Step 1 — Arena 원주 클릭 (8번)
+       · Arena(실험 공간)의 원형 경계 위를 8곳 클릭
+       · 클릭한 점들로 원이 자동 계산됨
+
+     Step 2 — Shelter 모서리 클릭 (4번)
+       · Shelter(피난처)의 네 모서리를 클릭
+       · 반드시 시계 방향 순서로 클릭할 것
+         (예: 좌상 → 우상 → 우하 → 좌하)
+       · 지그재그로 찍으면 폴리곤이 틀어져 내부 판정이 오작동함
+
+     Step 3 — Landmark 1 원주 클릭 (4번, 선택)
+       · Landmark 1의 원형 경계를 4곳 클릭
+       · 필요 없으면 ESC로 건너뜀
+
+     Step 4 — Landmark 2 원주 클릭 (4번, 선택)
+       · Landmark 2의 원형 경계를 4곳 클릭
+       · 필요 없으면 ESC로 건너뜀
+
+  3. 설정 완료 시 roi_info.json이 지정한 폴더에 저장됩니다.
+
+  [ 클릭 조작 ]
+    좌클릭  : 점 추가
+    우클릭  : 마지막 점 취소 (되돌리기)
+    ESC     : 현재 Step 취소 또는 건너뜀
+
+
+----------------------------------------------------------------
+[ 출력 파일 (roi_info.json) 구조 ]
+
+  {
+    "arena_center"      : [x, y],         // Arena 중심 좌표 (px)
+    "arena_radius"      : float,          // Arena 반지름 (px)
+    "arena_diameter_cm" : 100.0,          // Arena 실제 지름 (cm, 고정값)
+    "px_per_cm"         : float,          // 픽셀/cm 변환 계수
+    "shelter_points"    : [[x,y], ...],   // Shelter 꼭짓점 4개
+    "shelter_center"    : [x, y],         // Shelter 중심 좌표
+    "landmark1_center"  : [x, y],         // Landmark 1 중심 (설정 시)
+    "landmark1_radius"  : float,          // Landmark 1 반지름 (설정 시)
+    "landmark2_center"  : [x, y],         // Landmark 2 중심 (설정 시)
+    "landmark2_radius"  : float           // Landmark 2 반지름 (설정 시)
+  }
+
+
+----------------------------------------------------------------
+[ 트러블슈팅 ]
+
+  ── 실행 / 환경 관련 ──────────────────────────────────────────
+
+  Q. "ModuleNotFoundError: No module named 'cv2'" 오류가 발생함
+  A. python 명령이 Anaconda가 아닌 다른 Python을 가리키고 있을 수 있습니다.
+     아래 명령으로 올바른 Python을 확인하세요:
+       where python
+     C:\Anaconda\python.exe 를 직접 지정하여 실행하세요.
+
+  Q. "ModuleNotFoundError: No module named 'numpy'" 오류가 발생함
+  A. numpy가 설치되지 않은 환경입니다. 아래 명령으로 설치하세요:
+       C:\Anaconda\python.exe -m pip install numpy
+
+  Q. "ModuleNotFoundError: No module named 'tkinter'" 오류가 발생함
+  A. tkinter는 Python 기본 내장이지만 일부 환경에서 빠져 있을 수 있습니다.
+     Anaconda를 사용하면 기본 포함되어 있으므로 Anaconda Python을 권장합니다.
+
+  Q. python 명령을 쳐도 아무 반응이 없거나 "Python"만 출력됨
+  A. Windows Store Python 스텁이 실행되는 것입니다.
+     설정 → 앱 → 앱 실행 별칭 → python.exe 를 끄세요.
+
+  Q. VS Code에서 실행 시 import 오류가 발생함
+  A. Ctrl+Shift+P → "Python: Select Interpreter" 에서
+     C:\Anaconda\python.exe 를 선택하세요.
+
+  Q. conda install 명령 실행 중 "An unexpected error has occurred" 발생
+  A. conda 플러그인 충돌 문제입니다. 아래 옵션을 추가하여 재시도하세요:
+       conda --no-plugins install -c conda-forge opencv
+     또는 pip을 사용하세요:
+       C:\Anaconda\python.exe -m pip install opencv-python
+
+
+  ── GUI 창 관련 ───────────────────────────────────────────────
+
+  Q. 스크립트 실행 후 경로 설정 창이 화면에 보이지 않음
+  A. 창이 화면 뒤에 숨어 있을 수 있습니다.
+     작업 표시줄에서 Python 아이콘을 클릭하거나 Alt+Tab으로 찾아보세요.
+
+  Q. ROI 설정 창(영상 프레임)이 너무 크거나 너무 작음
+  A. 창 테두리를 드래그하여 크기를 조절할 수 있습니다.
+     (창은 크기 조절 가능한 WINDOW_NORMAL 모드로 열립니다)
+
+  Q. 모니터가 여러 개인데 창이 엉뚱한 화면에 열림
+  A. 현재 스크립트는 기본 모니터에 창을 띄웁니다.
+     열린 창을 원하는 모니터로 직접 드래그하여 옮기세요.
+
+  Q. 경로 설정 창에서 "ROI setting start"를 눌렀는데 아무 반응이 없음
+  A. 영상 파일 경로 또는 저장 경로 중 하나가 비어 있으면 진행되지 않습니다.
+     두 경로가 모두 입력되었는지 확인하세요.
+
+
+  ── 영상 파일 관련 ────────────────────────────────────────────
+
+  Q. "I can't read the video." 오류가 출력됨
+  A. 아래 사항을 확인하세요:
+     · 파일 경로에 오타가 없는지 확인
+     · 지원 형식: .avi / .mp4 / .mov
+     · 파일이 다른 프로그램에서 열려 있으면 닫은 후 재시도
+     · 파일이 손상된 경우 다른 영상으로 테스트
+
+  Q. 파일 경로에 한글이 포함되어 있으면 영상을 못 읽음
+  A. OpenCV는 경로의 한글(비ASCII 문자)을 처리하지 못하는 경우가 있습니다.
+     영상 파일을 한글이 없는 경로(예: C:\data\video.avi)로 옮긴 후 실행하세요.
+
+  Q. 영상은 열렸는데 화면이 완전히 검거나 빈 프레임이 보임
+  A. 영상의 중간 프레임을 읽을 때 문제가 생긴 것입니다.
+     영상 파일이 정상인지 다른 플레이어(예: VLC)로 먼저 확인하세요.
+
+
+  ── 클릭 / ROI 설정 관련 ──────────────────────────────────────
+
+  Q. 클릭해도 점이 찍히지 않음
+  A. ROI 설정 창이 활성화(포커스)되어 있지 않을 수 있습니다.
+     창을 한 번 클릭하여 포커스를 준 뒤 다시 시도하세요.
+
+  Q. ESC를 눌렀더니 Step 전체가 취소되고 다시 처음부터 시작해야 함
+  A. ESC는 현재 Step을 취소합니다. Step 1(Arena)이나 Step 2(Shelter)에서
+     ESC를 누르면 해당 Step이 중단되고 스크립트가 종료됩니다.
+     Step 3, 4(Landmark)에서만 ESC로 건너뛸 수 있습니다.
+
+  Q. Arena 원이 실제 경계와 맞지 않음 (너무 크거나 작음)
+  A. 원주 위의 점을 고르게 분포시켜 클릭해야 정확도가 높아집니다.
+     한쪽에 몰리면 원 계산이 틀려집니다. 우클릭으로 점을 취소하고 재클릭하세요.
+
+
+  ── 저장 관련 ─────────────────────────────────────────────────
+
+  Q. roi_info.json이 저장되지 않음 / 권한 오류 발생
+  A. 저장 폴더에 쓰기 권한이 없는 경우입니다.
+     C:\Users\사용자명\ 아래의 폴더(예: 바탕화면, 문서)를 저장 경로로 선택하세요.
+     C:\Windows\ 나 C:\Program Files\ 같은 시스템 폴더는 피하세요.
+
+  Q. roi_info.json을 덮어쓰고 싶지 않은데 자동으로 덮어써짐
+  A. 스크립트는 같은 이름의 파일이 있으면 자동으로 덮어씁니다.
+     이전 파일을 보존하려면 저장 전에 직접 파일명을 바꿔두세요.
+
+================================================================
