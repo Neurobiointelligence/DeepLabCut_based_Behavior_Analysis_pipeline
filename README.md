@@ -249,8 +249,6 @@ Shelter 유무(`Shelter O` / `Shelter X`)로 trial을 나눠 각각, 그리고 �
 | `move_thr` | 3.0 cm/s | 이 초과면 이동 |
 | `shelter_r` | 8.0 cm | 거리 기반 shelter 판정 반경 (폴리곤 없을 때 fallback) |
 | `shelter_dur` | 1.0 s | shelter 체류로 인정할 최소 시간 |
-| `genuine_entry_min_dist` | 15.0 cm | 직전에 이 거리 이상 벗어나야 "진짜 진입" |
-| `genuine_entry_lookback` | 5.0 s | 위 판정의 lookback 구간 |
 
 추적 품질 관련:
 
